@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-const LPT_TICK = 1000 * time.Nanosecond
+const LPT_TICK = 0 * time.Nanosecond
 
 type LptOutput struct {
 	buffer *Buffer
