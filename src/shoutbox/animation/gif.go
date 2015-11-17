@@ -101,11 +101,17 @@ func (this *GifAnimator) loop() {
 			}
 
 			this.output.Flush()
-
-			select {
-			case <-this.orderStop:
-				return
-			case <-time.After(10 * time.Millisecond * time.Duration(this.g.Delay[idx])):
+			if this.g.Delay[idx] > 0 {
+				select {
+				case <-this.orderStop:
+					return
+				case <-time.After(10 * time.Millisecond * time.Duration(this.g.Delay[idx])):
+				}
+			} else {
+				select {
+				case <-this.orderStop:
+					return
+				}
 			}
 		}
 	}
