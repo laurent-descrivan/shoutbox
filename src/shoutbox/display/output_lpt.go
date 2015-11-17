@@ -30,9 +30,10 @@ func (this *LptOutput) Buffer() *Buffer {
 func (this *LptOutput) Flush() {
 	for x := 0; x < this.buffer.Width; x++ {
 		var col byte
-		for y := uint(0); int(y) < this.buffer.Height; y++ {
+		height := uint(this.buffer.Height)
+		for y := uint(0); y < height; y++ {
 			if this.buffer.Pixels[x][y] {
-				col |= 1 << y
+				col |= 1 << (height - y - 1)
 			}
 		}
 		this.putline(col)
