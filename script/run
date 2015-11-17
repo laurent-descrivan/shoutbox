@@ -1,0 +1,23 @@
+#!/bin/bash
+# -*- encoding : utf-8 -*-
+
+cd "${BASH_SOURCE%/*}/.." || exit
+
+export GOPATH="$PWD"
+
+PKG="$1"
+if [ -z "$PKG" ]; then
+	PKG="shoutbox/main"
+fi
+
+echo -n "Compiling..."
+OUTPUT=`go build -o bin/shoutbox $PKG 2>&1 | head -n 35`
+
+if [ -z "$OUTPUT" ]; then
+	echo " Done."
+	bin/shoutbox
+else
+	echo "$OUTPUT"
+	subl "$(echo "$OUTPUT" | grep ": " | head -n1 | cut -d ':' -f 1-2)"
+	exit 1
+fi
