@@ -7,7 +7,7 @@ type Buffer struct {
 }
 
 func NewBuffer() *Buffer {
-	w := 126
+	w := 96
 	h := 7
 	px := make([][]bool, w)
 	for x := 0; x < w; x++ {

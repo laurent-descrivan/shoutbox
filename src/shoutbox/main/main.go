@@ -9,7 +9,7 @@ import (
 
 func main() {
 	buffer := display.NewBuffer()
-	output := display.NewTerminalOutput(buffer)
+	output := display.NewLptOutput(buffer) // display.NewTerminalOutput(buffer)
 
 	animator := animation.NewGifAnimator(output)
 
