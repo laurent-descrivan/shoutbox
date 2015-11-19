@@ -33,16 +33,24 @@ func (this *LptOutput) Buffer() *Buffer {
 }
 
 func (this *LptOutput) Flush() {
-	newx := 0
-	for oldx := 0; oldx < this.buffer.Width; oldx++ {
+	oldx := this.buffer.Width - 1
+	count := 0
+
+	for newx := this.buffer.Width - 1; newx >= 0; newx-- {
 		if sameRows(this.buffer.Pixels[newx], this.lastBuffer.Pixels[oldx]) {
-			newx += 1
+			oldx -= 1
+			count += 1
 		} else {
-			newx = 0
+			oldx = this.buffer.Width - 1
+			count = 0
+			if sameRows(this.buffer.Pixels[newx], this.lastBuffer.Pixels[oldx]) {
+				oldx -= 1
+				count += 1
+			}
 		}
 	}
 
-	for x := newx; x < this.buffer.Width; x++ {
+	for x := count; x < this.buffer.Width; x++ {
 		var col byte
 		height := uint(this.buffer.Height)
 		for y := uint(0); y < height; y++ {
