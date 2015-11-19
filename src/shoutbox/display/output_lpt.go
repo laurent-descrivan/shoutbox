@@ -8,8 +8,9 @@ import (
 const LPT_TICK = 0 * time.Nanosecond
 
 type LptOutput struct {
-	buffer *Buffer
-	out    *os.File
+	lastBuffer *Buffer
+	buffer     *Buffer
+	out        *os.File
 }
 
 func NewLptOutput(buffer *Buffer) *LptOutput {
@@ -17,9 +18,13 @@ func NewLptOutput(buffer *Buffer) *LptOutput {
 	if err != nil {
 		panic(err.Error())
 	}
+
+	lastBuffer := NewBuffer()
+	lastBuffer.CopyFrom(buffer)
 	return &LptOutput{
-		buffer: buffer,
-		out:    out,
+		buffer:     buffer,
+		lastBuffer: lastBuffer,
+		out:        out,
 	}
 }
 
@@ -28,7 +33,16 @@ func (this *LptOutput) Buffer() *Buffer {
 }
 
 func (this *LptOutput) Flush() {
-	for x := 0; x < this.buffer.Width; x++ {
+	newx := 0
+	for oldx := 0; oldx < this.buffer.Width; oldx++ {
+		if sameRows(this.buffer.Pixels[newx], this.lastBuffer.Pixels[oldx]) {
+			newx += 1
+		} else {
+			newx = 0
+		}
+	}
+
+	for x := newx; x < this.buffer.Width; x++ {
 		var col byte
 		height := uint(this.buffer.Height)
 		for y := uint(0); y < height; y++ {
@@ -38,6 +52,7 @@ func (this *LptOutput) Flush() {
 		}
 		this.putline(col)
 	}
+	this.lastBuffer.CopyFrom(this.buffer)
 }
 
 func (this *LptOutput) Clear() {
@@ -53,4 +68,16 @@ func (this *LptOutput) putline(pixels byte) {
 	time.Sleep(LPT_TICK)
 	this.out.WriteAt([]byte{(pixels & 127) ^ 255}, 888)
 	time.Sleep(LPT_TICK)
+}
+
+func sameRows(rowa []bool, rowb []bool) bool {
+	if len(rowa) != len(rowb) {
+		return false
+	}
+	for i := range rowa {
+		if rowa[i] != rowb[i] {
+			return false
+		}
+	}
+	return true
 }
