@@ -33,20 +33,10 @@ func (this *LptOutput) Buffer() *Buffer {
 }
 
 func (this *LptOutput) Flush() {
-	oldx := this.buffer.Width - 1
-	count := 0
-
-	for newx := this.buffer.Width - 1; newx >= 0; newx-- {
-		if sameRows(this.buffer.Pixels[newx], this.lastBuffer.Pixels[oldx]) {
-			oldx -= 1
-			count += 1
-		} else {
-			oldx = this.buffer.Width - 1
-			count = 0
-			if sameRows(this.buffer.Pixels[newx], this.lastBuffer.Pixels[oldx]) {
-				oldx -= 1
-				count += 1
-			}
+	var count = 0
+	for count := 0; count < this.buffer.Width; count++ {
+		if sameRows(this.lastBuffer.Pixels[count:], this.buffer.Pixels[:this.buffer.Width-count]) {
+			break
 		}
 	}
 
@@ -78,14 +68,15 @@ func (this *LptOutput) putline(pixels byte) {
 	time.Sleep(LPT_TICK)
 }
 
-func sameRows(rowa []bool, rowb []bool) bool {
-	if len(rowa) != len(rowb) {
-		return false
-	}
-	for i := range rowa {
-		if rowa[i] != rowb[i] {
-			return false
+func sameRows(rowsa, rowsb [][]bool) bool {
+	for i := range rowsa {
+		rowa := rowsa[i]
+		rowb := rowsb[i]
+		for j := range rowa {
+			if rowa[j] != rowb[j] {
+				return false
+			}
 		}
 	}
-	return true
+	return false
 }
