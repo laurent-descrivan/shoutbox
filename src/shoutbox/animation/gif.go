@@ -73,15 +73,13 @@ func (this *GifAnimator) loop() {
 				for y := 0; y < buffer.Height; y++ {
 					c := img.At(x, y)
 					_, _, _, alpha := img.At(x, y).RGBA()
-
-					// If pixel is opaque
 					if alpha >= 0x8000 {
-						buffer.Pixels[x][y] = luminance(c) < 0.5
+						buffer.Pixels[x][y] = isLit(c)
 					} else {
 						// See http://www.webreference.com/content/studio/disposal.html
 						switch this.g.Disposal[idx] {
 						case gif.DisposalBackground: // Restore to Background if asked for
-							buffer.Pixels[x][y] = luminance(img.Palette[this.g.BackgroundIndex]) < 0.5
+							buffer.Pixels[x][y] = isLit(img.Palette[this.g.BackgroundIndex])
 						case gif.DisposalPrevious: // Restore to previous if asked for
 							buffer.Pixels[x][y] = restorePreviousBuffer.Pixels[x][y]
 						case gif.DisposalNone:
@@ -116,7 +114,11 @@ func (this *GifAnimator) loop() {
 	}
 }
 
-func luminance(c color.Color) float32 {
-	r, g, b, _ := c.RGBA()
-	return (0.2126*float32(r) + 0.7152*float32(g) + 0.0722*float32(b)) / 0xffff
+func isLit(c color.Color) bool {
+	r, g, b, a := c.RGBA()
+	if a < 0x8000 {
+		return false
+	} else {
+		return ((0.2126*float32(r) + 0.7152*float32(g) + 0.0722*float32(b)) / 0xffff) < 0.5
+	}
 }

@@ -142,7 +142,7 @@ func (this *TextAnimator) copyImg(x, y int) {
 
 	for x2 := 0; x2 < buffer.Width; x2++ {
 		for y2 := 0; y2 < buffer.Height; y2++ {
-			buffer.Pixels[x2][y2] = luminance(this.textImg.At(x2+x, y2+y)) >= 0.5
+			buffer.Pixels[x2][y2] = !isLit(this.textImg.At(x2+x, y2+y))
 		}
 	}
 }
