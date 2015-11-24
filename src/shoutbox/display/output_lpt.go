@@ -33,14 +33,23 @@ func (this *LptOutput) Buffer() *Buffer {
 }
 
 func (this *LptOutput) Flush() {
-	var count = 0
-	for count := 0; count < this.buffer.Width; count++ {
-		if sameRows(this.lastBuffer.Pixels[count:], this.buffer.Pixels[:this.buffer.Width-count]) {
+	// Look at the differences between last frame and current frame,
+	// and compute the number of shifted columns, in order to push
+	// only the minimum amount of pixel columns.
+	var shiftedColumnsCount = 0
+	for shiftedColumnsCount = 0; shiftedColumnsCount < this.buffer.Width; shiftedColumnsCount++ {
+		if sameRows(this.lastBuffer.Pixels[shiftedColumnsCount:], this.buffer.Pixels[:this.buffer.Width-shiftedColumnsCount]) {
 			break
 		}
 	}
 
-	for x := count; x < this.buffer.Width; x++ {
+	// If the last frame is the same, do nothing
+	if shiftedColumnsCount == 0 {
+		return
+	}
+
+	// Push the shifted columns, up to the entire width of the buffer
+	for x := shiftedColumnsCount; x < this.buffer.Width; x++ {
 		var col byte
 		height := uint(this.buffer.Height)
 		for y := uint(0); y < height; y++ {
@@ -50,6 +59,8 @@ func (this *LptOutput) Flush() {
 		}
 		this.putline(col)
 	}
+
+	// Backup the frame for later comparison
 	this.lastBuffer.CopyFrom(this.buffer)
 }
 
@@ -78,5 +89,5 @@ func sameRows(rowsa, rowsb [][]bool) bool {
 			}
 		}
 	}
-	return false
+	return true
 }
