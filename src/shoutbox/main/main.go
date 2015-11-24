@@ -26,7 +26,7 @@ func main() {
 
 	// animator.SetGif(g)
 
-	animator.SetText("-= AG Electrolab 2015 =-")
+	animator.SetText("-= Electrolab =-")
 	animator.Start()
 	animator.Wait()
 }
