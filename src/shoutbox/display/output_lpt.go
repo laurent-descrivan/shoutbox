@@ -49,7 +49,7 @@ func (this *LptOutput) Flush() {
 	}
 
 	// Push the shifted columns, up to the entire width of the buffer
-	for x := shiftedColumnsCount; x < this.buffer.Width; x++ {
+	for x := this.buffer.Width - shiftedColumnsCount; x < this.buffer.Width; x++ {
 		var col byte
 		height := uint(this.buffer.Height)
 		for y := uint(0); y < height; y++ {
