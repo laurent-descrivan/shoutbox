@@ -1,38 +1,48 @@
 package display
 
 import (
-	"os"
+	"github.com/stianeikeland/go-rpio"
 	"time"
 )
 
-const LPT_TICK = 0 * time.Nanosecond
+const RASPI_TICK = 0 * time.Nanosecond
 
-type LptOutput struct {
+type RaspiOutput struct {
 	lastBuffer *Buffer
 	buffer     *Buffer
-	out        *os.File
+	clock      rpio.Pin
+	out        [7]rpio.Pin
 }
 
-func NewLptOutput(buffer *Buffer) *LptOutput {
-	out, err := os.OpenFile("/dev/port", os.O_RDWR, 0777)
+func NewRaspiOutput(buffer *Buffer) *RaspiOutput {
+	err := rpio.Open()
 	if err != nil {
 		panic(err.Error())
 	}
 
 	lastBuffer := NewBuffer()
 	lastBuffer.CopyFrom(buffer)
-	return &LptOutput{
+	return &RaspiOutput{
 		buffer:     buffer,
 		lastBuffer: lastBuffer,
-		out:        out,
+		clock:      rpio.Pin(15),
+		out: [7]rpio.Pin{
+			rpio.Pin(0),
+			rpio.Pin(1),
+			rpio.Pin(4),
+			rpio.Pin(17),
+			rpio.Pin(21),
+			rpio.Pin(22),
+			rpio.Pin(14),
+		},
 	}
 }
 
-func (this *LptOutput) Buffer() *Buffer {
+func (this *RaspiOutput) Buffer() *Buffer {
 	return this.buffer
 }
 
-func (this *LptOutput) Flush() {
+func (this *RaspiOutput) Flush() {
 	// Look at the differences between last frame and current frame,
 	// and compute the number of shifted columns, in order to push
 	// only the minimum amount of pixel columns.
@@ -64,17 +74,26 @@ func (this *LptOutput) Flush() {
 	this.lastBuffer.CopyFrom(this.buffer)
 }
 
-func (this *LptOutput) Clear() {
+func (this *RaspiOutput) Clear() {
 	for i := 0; i < this.buffer.Width; i++ {
 		this.putline(0)
 	}
 }
 
-func (this *LptOutput) putline(pixels byte) {
-	this.out.WriteAt([]byte{(pixels & 127) ^ 255}, 888)
-	time.Sleep(LPT_TICK)
-	this.out.WriteAt([]byte{(pixels | 128) ^ 255}, 888)
-	time.Sleep(LPT_TICK)
-	this.out.WriteAt([]byte{(pixels & 127) ^ 255}, 888)
-	time.Sleep(LPT_TICK)
+func (this *RaspiOutput) putline(pixels byte) {
+	for i := uint(0); i < 7; i++ {
+		setPin(this.out[i], (pixels|(1<<i)) != 0)
+	}
+	setPin(this.clock, true)
+	time.Sleep(10 * time.Microsecond)
+	setPin(this.clock, false)
+	time.Sleep(10 * time.Microsecond)
+}
+
+func setPin(pin rpio.Pin, state bool) {
+	if state {
+		pin.High()
+	} else {
+		pin.Low()
+	}
 }

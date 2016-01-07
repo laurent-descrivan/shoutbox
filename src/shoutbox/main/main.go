@@ -9,8 +9,9 @@ import (
 
 func main() {
 	buffer := display.NewBuffer()
-	output := display.NewLptOutput(buffer)
+	// output := display.NewLptOutput(buffer)
 	// output := display.NewTerminalOutput(buffer)
+	output := display.NewRaspiOutput(buffer)
 
 	animator := animation.NewGifAnimator(output)
 	// animator := animation.NewTextAnimator(output)
