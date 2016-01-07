@@ -81,13 +81,15 @@ func (this *RaspiOutput) Clear() {
 }
 
 func (this *RaspiOutput) putline(pixels byte) {
+	setPin(this.clock, false)
+	time.Sleep(RASPI_TICK * time.Microsecond)
 	for i := uint(0); i < 7; i++ {
 		setPin(this.out[i], (pixels|(1<<i)) != 0)
 	}
 	setPin(this.clock, true)
-	time.Sleep(10 * time.Microsecond)
+	time.Sleep(RASPI_TICK * time.Microsecond)
 	setPin(this.clock, false)
-	time.Sleep(10 * time.Microsecond)
+	time.Sleep(RASPI_TICK * time.Microsecond)
 }
 
 func setPin(pin rpio.Pin, state bool) {
