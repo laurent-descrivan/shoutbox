@@ -117,7 +117,7 @@ func (this *GifAnimator) loop() {
 func isLit(c color.Color) bool {
 	r, g, b, a := c.RGBA()
 	if a < 0x8000 {
-		return false
+		return true
 	} else {
 		return ((0.2126*float32(r) + 0.7152*float32(g) + 0.0722*float32(b)) / 0xffff) < 0.5
 	}
