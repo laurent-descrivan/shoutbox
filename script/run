@@ -11,11 +11,11 @@ if [ -z "$PKG" ]; then
 fi
 
 echo -n "Compiling..."
-OUTPUT=`go build -o bin/shoutbox $PKG 2>&1 | head -n 35`
+OUTPUT=`go install $PKG 2>&1 | head -n 35`
 
 if [ -z "$OUTPUT" ]; then
 	echo " Done."
-	bin/shoutbox
+	bin/main
 else
 	echo "$OUTPUT"
 	subl "$(echo "$OUTPUT" | grep ": " | head -n1 | cut -d ':' -f 1-2)"
