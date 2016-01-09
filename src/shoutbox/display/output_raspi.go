@@ -22,20 +22,28 @@ func NewRaspiOutput(buffer *Buffer) *RaspiOutput {
 
 	lastBuffer := NewBuffer()
 	lastBuffer.CopyFrom(buffer)
-	return &RaspiOutput{
+	output := &RaspiOutput{
 		buffer:     buffer,
 		lastBuffer: lastBuffer,
-		clock:      rpio.Pin(15),
+		clock:      rpio.Pin(14),
 		out: [7]rpio.Pin{
-			rpio.Pin(0),
-			rpio.Pin(1),
-			rpio.Pin(4),
-			rpio.Pin(17),
-			rpio.Pin(21),
 			rpio.Pin(22),
-			rpio.Pin(14),
+			rpio.Pin(17),
+			rpio.Pin(25),
+			rpio.Pin(24),
+			rpio.Pin(23),
+			rpio.Pin(18),
+			rpio.Pin(15),
 		},
 	}
+
+	output.clock.Output()
+	for _, pin := range output.out {
+		pin.Output()
+		pin.PullOff()
+	}
+
+	return output
 }
 
 func (this *RaspiOutput) Buffer() *Buffer {
@@ -81,15 +89,13 @@ func (this *RaspiOutput) Clear() {
 }
 
 func (this *RaspiOutput) putline(pixels byte) {
-	setPin(this.clock, false)
-	time.Sleep(RASPI_TICK * time.Microsecond)
-	for i := uint(0); i < 7; i++ {
-		setPin(this.out[i], (pixels|(1<<i)) != 0)
-	}
 	setPin(this.clock, true)
-	time.Sleep(RASPI_TICK * time.Microsecond)
+	time.Sleep(RASPI_TICK)
+	for i := uint(0); i < 7; i++ {
+		setPin(this.out[i], (pixels&(1<<i)) != 0)
+	}
 	setPin(this.clock, false)
-	time.Sleep(RASPI_TICK * time.Microsecond)
+	time.Sleep(RASPI_TICK)
 }
 
 func setPin(pin rpio.Pin, state bool) {
