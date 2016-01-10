@@ -2,9 +2,9 @@ package main
 
 import (
 	"fmt"
-	"image/gif"
+	// "image/gif"
 	"net"
-	"os"
+	// "os"
 	"shoutbox/animation"
 	"shoutbox/display"
 	"time"
@@ -13,23 +13,23 @@ import (
 func main() {
 	buffer := display.NewBuffer()
 	// output := display.NewLptOutput(buffer)
-	output := display.NewTerminalOutput(buffer)
-	// output := display.NewRaspiOutput(buffer)
+	// output := display.NewTerminalOutput(buffer)
+	output := display.NewRaspiOutput(buffer)
 
 	// animator := animation.NewGifAnimator(output)
 	animator := animation.NewTextAnimator(output)
 
-	f, err := os.Open("data/pacman.gif")
-	if err != nil {
-		panic(err.Error())
-	}
-	g, err := gif.DecodeAll(f)
-	if err != nil {
-		panic(err.Error())
-	}
+	// f, err := os.Open("data/pacman.gif")
+	// if err != nil {
+	// 	panic(err.Error())
+	// }
+	// g, err := gif.DecodeAll(f)
+	// if err != nil {
+	// 	panic(err.Error())
+	// }
 
-	_ = g
-	// animator.SetGif(g)
+	// _ = g
+	// // animator.SetGif(g)
 
 	ip := getNetworkIP()
 	if ip == "" {
@@ -38,6 +38,7 @@ func main() {
 	animator.SetText(fmt.Sprintf("http://%s/", ip))
 	animator.Start()
 	time.Sleep(15 * time.Second)
+
 	animator.SetText("-= Electrolab =-")
 	animator.Wait()
 }
