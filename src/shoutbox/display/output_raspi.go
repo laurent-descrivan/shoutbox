@@ -27,12 +27,12 @@ func NewRaspiOutput(buffer *Buffer) *RaspiOutput {
 		lastBuffer: lastBuffer,
 		clock:      rpio.Pin(14),
 		out: [7]rpio.Pin{
-			rpio.Pin(22),
-			rpio.Pin(17),
 			rpio.Pin(25),
 			rpio.Pin(24),
 			rpio.Pin(23),
 			rpio.Pin(18),
+			rpio.Pin(17),
+			rpio.Pin(4),
 			rpio.Pin(15),
 		},
 	}
