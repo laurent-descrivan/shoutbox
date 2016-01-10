@@ -48,15 +48,8 @@ func NewTextAnimator(output display.Output) *TextAnimator {
 }
 
 func (this *TextAnimator) SetText(text string) {
-	wasRunning := this.isRunning
-	if wasRunning {
-		this.Stop()
-	}
 	this.text = text
 	this.computeText()
-	if wasRunning {
-		this.Start()
-	}
 }
 
 func (this *TextAnimator) Start() {
