@@ -12,6 +12,11 @@ var lines []string
 var lineIdx int
 var linesMutex sync.Mutex
 
+func init() {
+	ReloadText()
+	lineIdx = 0
+}
+
 func ReloadText() {
 	bytes, err := ioutil.ReadFile(LINES_FILE_PATH)
 	if err != nil {
@@ -27,6 +32,7 @@ func ReloadText() {
 	linesMutex.Lock()
 	defer linesMutex.Unlock()
 	lines = splittedLines
+	lineIdx = len(lines) - 1
 }
 
 func GetRandomLine() string {

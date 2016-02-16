@@ -13,8 +13,6 @@ import (
 const LINES_FILE_PATH = `data/lines.txt`
 
 func main() {
-	server.ReloadText()
-
 	mux := server.NewMux()
 	go func() {
 		err := http.ListenAndServe(":80", mux)
