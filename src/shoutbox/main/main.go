@@ -18,7 +18,7 @@ func main() {
 
 	mux := server.NewMux()
 	go func() {
-		err := http.ListenAndServe(":8081", mux)
+		err := http.ListenAndServe(":80", mux)
 		if err != nil {
 			panic(fmt.Sprintf("Cannot open web server: %s", err.Error()))
 		}
