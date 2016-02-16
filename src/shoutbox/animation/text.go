@@ -32,9 +32,10 @@ func init() {
 }
 
 type TextAnimator struct {
-	output  display.Output
-	text    string
-	textImg image.Image
+	output       display.Output
+	text         string
+	textImg      image.Image
+	textImgWidth int
 
 	isRunning     bool
 	orderStop     chan bool
@@ -82,10 +83,9 @@ func (this *TextAnimator) loop() {
 	}
 
 	buffer := this.output.Buffer()
-	imgWidth := this.textImg.Bounds().Dx()
 
 	for {
-		for x := -buffer.Width; x < imgWidth+buffer.Width; x++ {
+		for x := -buffer.Width; x < this.textImgWidth; x++ {
 			this.copyImg(x, 0)
 			this.output.Flush()
 			select {
@@ -134,6 +134,7 @@ func (this *TextAnimator) computeText() {
 		panic(err.Error())
 	}
 
+	this.textImgWidth = textWidth
 	this.textImg = rgba
 }
 

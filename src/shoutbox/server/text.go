@@ -9,6 +9,7 @@ import (
 )
 
 var lines []string
+var lineIdx int
 var linesMutex sync.Mutex
 
 func ReloadText() {
@@ -34,6 +35,16 @@ func GetRandomLine() string {
 	}
 	linesMutex.Lock()
 	defer linesMutex.Unlock()
-	i := rand.Int31n(int32(len(lines)))
-	return lines[i]
+	lineIdx := rand.Int31n(int32(len(lines)))
+	return lines[lineIdx]
+}
+
+func GetNextLine() string {
+	if len(lines) == 0 {
+		return "<no text>"
+	}
+	linesMutex.Lock()
+	defer linesMutex.Unlock()
+	lineIdx = (lineIdx + 1) % len(lines)
+	return lines[lineIdx]
 }

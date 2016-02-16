@@ -53,7 +53,7 @@ func main() {
 	<-animator.EndOfLine
 
 	for {
-		animator.SetText(server.GetRandomLine())
+		animator.SetText(server.GetNextLine())
 		<-animator.EndOfLine
 	}
 	// animator.Wait()
