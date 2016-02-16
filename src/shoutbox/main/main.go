@@ -2,19 +2,32 @@ package main
 
 import (
 	"fmt"
+	"net/http"
 	// "image/gif"
 	"net"
-	// "os"
 	"shoutbox/animation"
 	"shoutbox/display"
+	"shoutbox/server"
 	"time"
 )
 
+const LINES_FILE_PATH = `data/lines.txt`
+
 func main() {
+	server.ReloadText()
+
+	mux := server.NewMux()
+	go func() {
+		err := http.ListenAndServe(":8081", mux)
+		if err != nil {
+			panic(fmt.Sprintf("Cannot open web server: %s", err.Error()))
+		}
+	}()
+
 	buffer := display.NewBuffer()
 	// output := display.NewLptOutput(buffer)
-	// output := display.NewTerminalOutput(buffer)
-	output := display.NewRaspiOutput(buffer)
+	output := display.NewTerminalOutput(buffer)
+	// output := display.NewRaspiOutput(buffer)
 
 	// animator := animation.NewGifAnimator(output)
 	animator := animation.NewTextAnimator(output)
@@ -37,10 +50,13 @@ func main() {
 	}
 	animator.SetText(fmt.Sprintf("http://%s/", ip))
 	animator.Start()
-	time.Sleep(15 * time.Second)
+	time.Sleep(1 * time.Second)
 
-	animator.SetText("-= Electrolab =-")
-	animator.Wait()
+	for {
+		animator.SetText(server.GetRandomLine())
+		<-animator.EndOfLine
+	}
+	// animator.Wait()
 }
 
 func getNetworkIP() string {

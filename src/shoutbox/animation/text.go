@@ -13,7 +13,7 @@ import (
 )
 
 const (
-	TEXT_DELAY = 20 * time.Millisecond
+	TEXT_DELAY = 25 * time.Millisecond
 	FONT_PATH  = "data/zig.ttf"
 )
 
@@ -39,11 +39,14 @@ type TextAnimator struct {
 	isRunning     bool
 	orderStop     chan bool
 	waitForFinish sync.WaitGroup
+
+	EndOfLine chan bool
 }
 
 func NewTextAnimator(output display.Output) *TextAnimator {
 	return &TextAnimator{
-		output: output,
+		output:    output,
+		EndOfLine: make(chan bool, 1),
 	}
 }
 
@@ -82,7 +85,7 @@ func (this *TextAnimator) loop() {
 	imgWidth := this.textImg.Bounds().Dx()
 
 	for {
-		for x := -buffer.Width; x < imgWidth; x++ {
+		for x := -buffer.Width; x < imgWidth+buffer.Width; x++ {
 			this.copyImg(x, 0)
 			this.output.Flush()
 			select {
@@ -90,6 +93,10 @@ func (this *TextAnimator) loop() {
 				return
 			case <-time.After(TEXT_DELAY):
 			}
+		}
+		select {
+		case this.EndOfLine <- true:
+		default:
 		}
 	}
 }
