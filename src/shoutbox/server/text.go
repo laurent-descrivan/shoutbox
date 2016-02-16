@@ -45,6 +45,7 @@ func GetNextLine() string {
 	}
 	linesMutex.Lock()
 	defer linesMutex.Unlock()
+	result := lines[lineIdx]
 	lineIdx = (lineIdx + 1) % len(lines)
-	return lines[lineIdx]
+	return result
 }
