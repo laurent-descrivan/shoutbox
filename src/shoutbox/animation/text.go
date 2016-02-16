@@ -13,7 +13,7 @@ import (
 )
 
 const (
-	TEXT_DELAY = 25 * time.Millisecond
+	TEXT_DELAY = 20 * time.Millisecond
 	FONT_PATH  = "data/zig.ttf"
 )
 
