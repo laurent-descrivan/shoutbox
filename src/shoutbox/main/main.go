@@ -8,7 +8,6 @@ import (
 	"shoutbox/animation"
 	"shoutbox/display"
 	"shoutbox/server"
-	"time"
 )
 
 const LINES_FILE_PATH = `data/lines.txt`
@@ -50,7 +49,8 @@ func main() {
 	}
 	animator.SetText(fmt.Sprintf("http://%s/", ip))
 	animator.Start()
-	time.Sleep(1 * time.Second)
+	<-animator.EndOfLine
+	<-animator.EndOfLine
 
 	for {
 		animator.SetText(server.GetRandomLine())

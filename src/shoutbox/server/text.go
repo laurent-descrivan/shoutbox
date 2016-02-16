@@ -1,7 +1,6 @@
 package server
 
 import (
-	"fmt"
 	"io/ioutil"
 	"math/rand"
 	"regexp"
@@ -36,6 +35,5 @@ func GetRandomLine() string {
 	linesMutex.Lock()
 	defer linesMutex.Unlock()
 	i := rand.Int31n(int32(len(lines)))
-	fmt.Println("i", i)
 	return lines[i]
 }
